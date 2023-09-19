@@ -72,12 +72,18 @@ public class GoogleMusicImporter implements Importer<TokensAndUrlAuthData, Music
   private final Monitor monitor;
   private final double writesPerSecond;
 
+  private IdempotentImportExecutor retryingIdempotentExecutor;
+
+  private Boolean enableRetrying;
+
   public GoogleMusicImporter(
       GoogleCredentialFactory credentialFactory,
       JsonFactory jsonFactory,
       Monitor monitor,
-      double writesPerSecond) {
-    this(credentialFactory, jsonFactory, null, new HashMap<>(), monitor, writesPerSecond);
+      double writesPerSecond,
+      IdempotentImportExecutor retryingIdempotentExecutor, boolean enableRetrying) {
+    this(credentialFactory, jsonFactory, null, new HashMap<>(), monitor, writesPerSecond,
+        retryingIdempotentExecutor, enableRetrying);
   }
 
   @VisibleForTesting
@@ -87,13 +93,16 @@ public class GoogleMusicImporter implements Importer<TokensAndUrlAuthData, Music
       GoogleMusicHttpApi musicHttpApi,
       Map<UUID, GoogleMusicHttpApi> musicHttpApisMap,
       Monitor monitor,
-      double writesPerSecond) {
+      double writesPerSecond, IdempotentImportExecutor retryingIdempotentExecutor,
+      boolean enableRetrying) {
     this.credentialFactory = credentialFactory;
     this.jsonFactory = jsonFactory;
     this.musicHttpApi = musicHttpApi;
     this.musicHttpApisMap = musicHttpApisMap;
     this.monitor = monitor;
     this.writesPerSecond = writesPerSecond;
+    this.retryingIdempotentExecutor = retryingIdempotentExecutor;
+    this.enableRetrying = enableRetrying;
   }
 
   @Override

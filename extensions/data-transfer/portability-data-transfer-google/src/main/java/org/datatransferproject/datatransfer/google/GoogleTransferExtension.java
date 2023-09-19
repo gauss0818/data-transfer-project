@@ -137,7 +137,8 @@ public class GoogleTransferExtension implements TransferExtension {
             enableRetrying));
     importerBuilder.put(VIDEOS, new GoogleVideosImporter(appCredentials, jobStore, monitor));
     importerBuilder.put(MUSIC, new GoogleMusicImporter(credentialFactory, jsonFactory, monitor,
-        context.getSetting("googleWritesPerSecond", 1.0)));
+        context.getSetting("googleWritesPerSecond", 1.0), idempotentImportExecutor,
+        enableRetrying));
     importerMap = importerBuilder.build();
 
     ImmutableMap.Builder<DataVertical, Exporter> exporterBuilder = ImmutableMap.builder();
